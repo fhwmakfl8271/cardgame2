@@ -1,4 +1,3 @@
-// 30쌍 러시아어-한글 단어
 const wordPool = [
   { ru: "кот", ko: "고양이" },
   { ru: "собака", ko: "강아지" },
@@ -42,16 +41,14 @@ function initGame() {
   flippedCards = [];
 
   // 🔹 무작위 4쌍 선택
-  const chosen = shuffle([...wordPool]).slice(0, 4);
+  const chosen = getRandomItems(wordPool, 4);
 
-  // 러시아어/한글 카드 만들기
   cards = [];
   chosen.forEach(w => {
     cards.push({ text: w.ru, pair: w.ko });
     cards.push({ text: w.ko, pair: w.ko });
   });
 
-  // 섞기
   cards = shuffle(cards);
 
   cards.forEach(c => {
@@ -95,9 +92,22 @@ function checkMatch() {
   }
 }
 
-// 배열 섞기 함수
+// Fisher–Yates shuffle
 function shuffle(array) {
-  return array.sort(() => Math.random() - 0.5);
+  let current = array.length, random;
+  while (current !== 0) {
+    random = Math.floor(Math.random() * current);
+    current--;
+    [array[current], array[random]] = [array[random], array[current]];
+  }
+  return array;
+}
+
+// 배열에서 랜덤 n개 뽑기
+function getRandomItems(array, n) {
+  const copy = [...array];
+  shuffle(copy);
+  return copy.slice(0, n);
 }
 
 restartBtn.addEventListener("click", initGame);
