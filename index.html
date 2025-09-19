@@ -34,7 +34,6 @@ const wordPool = [
 
 const board = document.getElementById("game-board");
 const restartBtn = document.getElementById("restart-btn");
-let cards = [];
 let flippedCards = [];
 
 function shuffle(array) {
@@ -62,6 +61,7 @@ function createCard(text,pair){
 }
 
 function flipCard(card){
+  // 이미 맞춘 카드나 뒤집힌 카드는 클릭 무시
   if(card.classList.contains("flipped") || card.classList.contains("matched")) return;
   if(flippedCards.length>=2) return;
 
@@ -77,7 +77,7 @@ function flipCard(card){
 function checkMatch(){
   const [c1,c2]=flippedCards;
   if(c1.dataset.pair===c2.dataset.pair && c1!==c2){
-    // 맞춘 카드 초록색으로 유지
+    // 맞춘 카드 유지, 초록색 표시
     c1.classList.add("matched");
     c2.classList.add("matched");
     c1.textContent=c1.dataset.text;
@@ -96,12 +96,12 @@ function initGame(){
   board.innerHTML="";
   flippedCards=[];
   const chosen=getRandomItems(wordPool,4);
-  cards=[];
+  const cards=[];
   chosen.forEach(w=>{
     cards.push({text:w.ru,pair:w.ko});
     cards.push({text:w.ko,pair:w.ko});
   });
-  cards=shuffle(cards);
+  shuffle(cards);
   cards.forEach(c=>board.appendChild(createCard(c.text,c.pair)));
 }
 
