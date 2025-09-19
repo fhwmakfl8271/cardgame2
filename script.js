@@ -1,8 +1,35 @@
-const words = [
+// 30쌍 러시아어-한글 단어
+const wordPool = [
   { ru: "кот", ko: "고양이" },
   { ru: "собака", ko: "강아지" },
   { ru: "дом", ko: "집" },
-  { ru: "мяч", ko: "공" }
+  { ru: "мяч", ko: "공" },
+  { ru: "мама", ko: "엄마" },
+  { ru: "папа", ko: "아빠" },
+  { ru: "книга", ko: "책" },
+  { ru: "яблоко", ko: "사과" },
+  { ru: "нос", ko: "코" },
+  { ru: "ухо", ko: "귀" },
+  { ru: "рука", ko: "손" },
+  { ru: "нога", ko: "다리" },
+  { ru: "глаз", ko: "눈" },
+  { ru: "рот", ko: "입" },
+  { ru: "дерево", ko: "나무" },
+  { ru: "цветок", ko: "꽃" },
+  { ru: "солнце", ko: "태양" },
+  { ru: "луна", ko: "달" },
+  { ru: "звезда", ko: "별" },
+  { ru: "машина", ko: "자동차" },
+  { ru: "велосипед", ko: "자전거" },
+  { ru: "поезд", ko: "기차" },
+  { ru: "самолёт", ko: "비행기" },
+  { ru: "школа", ko: "학교" },
+  { ru: "море", ko: "바다" },
+  { ru: "гора", ko: "산" },
+  { ru: "река", ko: "강" },
+  { ru: "друг", ko: "친구" },
+  { ru: "игра", ko: "게임" },
+  { ru: "вода", ko: "물" }
 ];
 
 let cards = [];
@@ -14,16 +41,20 @@ function initGame() {
   board.innerHTML = "";
   flippedCards = [];
 
-  // 러시아어, 한글 카드 섞어서 생성
+  // 🔹 무작위 4쌍 선택
+  const chosen = shuffle([...wordPool]).slice(0, 4);
+
+  // 러시아어/한글 카드 만들기
   cards = [];
-  words.forEach(w => {
+  chosen.forEach(w => {
     cards.push({ text: w.ru, pair: w.ko });
     cards.push({ text: w.ko, pair: w.ko });
   });
 
-  cards.sort(() => Math.random() - 0.5);
+  // 섞기
+  cards = shuffle(cards);
 
-  cards.forEach((c, i) => {
+  cards.forEach(c => {
     const card = document.createElement("div");
     card.classList.add("card");
     card.dataset.pair = c.pair;
@@ -62,6 +93,11 @@ function checkMatch() {
   if (document.querySelectorAll(".matched").length === cards.length) {
     setTimeout(() => alert("🎉 모두 맞췄어요!"), 300);
   }
+}
+
+// 배열 섞기 함수
+function shuffle(array) {
+  return array.sort(() => Math.random() - 0.5);
 }
 
 restartBtn.addEventListener("click", initGame);
