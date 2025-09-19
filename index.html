@@ -1,151 +1,149 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <title>단어 친구 찾기!</title>
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      text-align: center;
-      background: #fef9f5;
-      margin: 0;
-      padding: 20px;
-    }
-    h1 {
-      color: #ff6f61;
-    }
-    #desc {
-      margin-bottom: 20px;
-      font-size: 1.1em;
-      color: #555;
-    }
-    #game-board {
-      display: grid;
-      grid-template-columns: repeat(4, 120px);
-      gap: 15px;
-      justify-content: center;
-      margin-top: 20px;
-    }
-    .card {
-      background: #fff;
-      border: 2px solid #ddd;
-      border-radius: 12px;
-      height: 120px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 1.2em;
-      transition: transform 0.3s;
-    }
-    .card.flipped {
-      background: #ffe0d9;
-      border-color: #ff6f61;
-      transform: scale(1.05);
-    }
-    #restart-btn {
-      margin-top: 30px;
-      padding: 10px 20px;
-      font-size: 1em;
-      border: none;
-      background: #ff6f61;
-      color: #fff;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>단어 친구 찾기! (Найди друга слова!)</title>
+<style>
+  body {
+    font-family: 'Arial', sans-serif;
+    text-align: center;
+    background: #fef9f5;
+    margin: 0;
+    padding: 20px;
+  }
+  h1 { color: #ff6f61; }
+  #desc {
+    margin-bottom: 20px;
+    font-size: 1.1em;
+    color: #555;
+  }
+  #game-board {
+    display: grid;
+    grid-template-columns: repeat(4, 120px);
+    gap: 15px;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  .card {
+    background: #fff;
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.2em;
+    transition: transform 0.3s;
+  }
+  .card.flipped { background: #ffe0d9; transform: scale(1.05); border-color: #ff6f61; }
+  .card.matched { background: #c0ffc0; cursor: default; }
+  #restart-btn {
+    margin-top: 30px;
+    padding: 10px 20px;
+    font-size: 1em;
+    border: none;
+    background: #ff6f61;
+    color: #fff;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+</style>
 </head>
 <body>
 
-  <h1>단어 친구 찾기! (Найди друга слова!)</h1>
-  <div id="desc">
-    🧠 러시아어 단어와 같은 뜻의 한글 카드를 짝지어보세요!<br>
-    🧒 Найди карточки с одинаковым значением!
-  </div>
+<h1>단어 친구 찾기! (Найди друга слова!)</h1>
+<div id="desc">
+  🧠 러시아어 단어와 같은 뜻의 한글 카드를 짝지어보세요!<br>
+  🧒 Найди карточки с одинаковым значением!
+</div>
 
-  <div id="game-board"></div>
+<div id="game-board"></div>
+<button id="restart-btn">다시하기</button>
 
-  <button id="restart-btn">다시하기</button>
+<script>
+const wordPool = [
+  {ru:"кот", ko:"고양이"},{ru:"собака",ko:"강아지"},{ru:"дом",ko:"집"},{ru:"мяч",ko:"공"},
+  {ru:"мама",ko:"엄마"},{ru:"папа",ko:"아빠"},{ru:"солнце",ko:"해"},{ru:"луна",ko:"달"},
+  {ru:"друг",ko:"친구"},{ru:"яблоко",ko:"사과"},{ru:"молоко",ko:"우유"},{ru:"книга",ko:"책"},
+  {ru:"стол",ko:"책상"},{ru:"стул",ko:"의자"},{ru:"окно",ko:"창문"},{ru:"дверь",ko:"문"},
+  {ru:"ручка",ko:"펜"},{ru:"нос",ko:"코"},{ru:"ухо",ko:"귀"},{ru:"рот",ko:"입"},
+  {ru:"рука",ko:"손"},{ru:"нога",ko:"다리"},{ru:"глаз",ko:"눈"},{ru:"зуб",ko:"이"},
+  {ru:"школа",ko:"학교"},{ru:"лес",ko:"숲"},{ru:"река",ko:"강"},{ru:"море",ko:"바다"},
+  {ru:"гора",ko:"산"},{ru:"птица",ko:"새"},{ru:"рыба",ko:"물고기"},{ru:"тигр",ko:"호랑이"},
+  {ru:"слон",ko:"코끼리"},{ru:"игра",ko:"게임"},{ru:"песня",ko:"노래"}
+];
 
-  <script>
-    const wordPool = [
-      {ru:"кот", ko:"고양이"},{ru:"собака",ko:"강아지"},{ru:"дом",ko:"집"},{ru:"мяч",ko:"공"},{ru:"мама",ko:"엄마"},{ru:"папа",ko:"아빠"},
-      {ru:"солнце",ko:"해"},{ru:"луна",ko:"달"},{ru:"друг",ko:"친구"},{ru:"яблоко",ko:"사과"},{ru:"молоко",ko:"우유"},
-      {ru:"книга",ko:"책"},{ru:"стол",ko:"책상"},{ru:"окно",ko:"창문"},{ru:"нос",ko:"코"},{ru:"ухо",ko:"귀"},
-      {ru:"рот",ko:"입"},{ru:"рука",ko:"손"},{ru:"нога",ko:"다리"},{ru:"глаз",ko:"눈"},{ru:"зуб",ko:"이"},
-      {ru:"школа",ko:"학교"},{ru:"лес",ko:"숲"},{ru:"река",ko:"강"},{ru:"море",ko:"바다"},{ru:"гора",ko:"산"},
-      {ru:"птица",ko:"새"},{ru:"рыба",ko:"물고기"},{ru:"тигр",ko:"호랑이"},{ru:"слон",ko:"코끼리"}
-    ];
+const board = document.getElementById("game-board");
+const restartBtn = document.getElementById("restart-btn");
+let cards = [];
+let flippedCards = [];
 
-    const board = document.getElementById("game-board");
-    const restartBtn = document.getElementById("restart-btn");
-    let cards = [];
-    let flippedCards = [];
+function shuffle(array) {
+  for (let i = array.length -1; i>0; i--){
+    const j = Math.floor(Math.random() * (i+1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
 
-    function shuffle(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-      return array;
-    }
+function getRandomItems(arr, n) {
+  const copy = [...arr];
+  shuffle(copy);
+  return copy.slice(0,n);
+}
 
-    function getRandomItems(arr, n) {
-      const copy = [...arr];
-      shuffle(copy);
-      return copy.slice(0, n);
-    }
+function createCard(text, pair) {
+  const card = document.createElement("div");
+  card.className = "card";
+  card.textContent = "?";
+  card.dataset.text = text;
+  card.dataset.pair = pair;
+  card.addEventListener("click", () => flipCard(card));
+  return card;
+}
 
-    function createCard(text, pair) {
-      const card = document.createElement("div");
-      card.className = "card";
-      card.textContent = "?";
-      card.dataset.text = text;
-      card.dataset.pair = pair;
-      card.addEventListener("click", () => flipCard(card));
-      return card;
-    }
+function flipCard(card) {
+  if (flippedCards.length < 2 && !card.classList.contains("flipped") && !card.classList.contains("matched")) {
+    card.classList.add("flipped");
+    card.textContent = card.dataset.text;
+    flippedCards.push(card);
+    if (flippedCards.length === 2) setTimeout(checkMatch, 700);
+  }
+}
 
-    function flipCard(card) {
-      if (flippedCards.length < 2 && !card.classList.contains("flipped")) {
-        card.classList.add("flipped");
-        card.textContent = card.dataset.text;
-        flippedCards.push(card);
-        if (flippedCards.length === 2) {
-          setTimeout(checkMatch, 700);
-        }
-      }
-    }
+function checkMatch() {
+  const [c1, c2] = flippedCards;
+  if (c1.dataset.pair === c2.dataset.pair && c1 !== c2) {
+    c1.classList.add("matched");
+    c2.classList.add("matched");
+    c1.textContent = c1.dataset.text;
+    c2.textContent = c2.dataset.text;
+  } else {
+    c1.classList.remove("flipped");
+    c2.classList.remove("flipped");
+    c1.textContent = "?";
+    c2.textContent = "?";
+  }
+  flippedCards = [];
+}
 
-    function checkMatch() {
-      const [c1, c2] = flippedCards;
-      if (c1.dataset.pair === c2.dataset.pair && c1 !== c2) {
-        c1.style.visibility = "hidden";
-        c2.style.visibility = "hidden";
-      } else {
-        c1.classList.remove("flipped");
-        c2.classList.remove("flipped");
-        c1.textContent = "?";
-        c2.textContent = "?";
-      }
-      flippedCards = [];
-    }
+function initGame() {
+  board.innerHTML = "";
+  flippedCards = [];
+  const chosen = getRandomItems(wordPool, 4);
+  cards = [];
+  chosen.forEach(w => {
+    cards.push({text:w.ru, pair:w.ko});
+    cards.push({text:w.ko, pair:w.ko});
+  });
+  cards = shuffle(cards);
+  cards.forEach(c => board.appendChild(createCard(c.text, c.pair)));
+}
 
-    function initGame() {
-      board.innerHTML = "";
-      flippedCards = [];
-      const chosen = getRandomItems(wordPool, 4);
-      cards = [];
-      chosen.forEach(w => {
-        cards.push({text:w.ru, pair:w.ko});
-        cards.push({text:w.ko, pair:w.ko});
-      });
-      cards = shuffle(cards);
-      cards.forEach(c => board.appendChild(createCard(c.text, c.pair)));
-    }
+restartBtn.addEventListener("click", initGame);
+initGame();
+</script>
 
-    restartBtn.addEventListener("click", initGame);
-    initGame();
-  </script>
 </body>
 </html>
