@@ -34,10 +34,10 @@
     justify-content: center;
     cursor: pointer;
     font-size: 1.2em;
-    transition: transform 0.3s;
+    transition: transform 0.3s, background 0.3s;
   }
   .card.flipped { background: #ffe0d9; transform: scale(1.05); border-color: #ff6f61; }
-  .card.matched { background: #c0ffc0; cursor: default; }
+  .card.matched { background: #c0ffc0; cursor: default; border-color: #28a745; }
   #restart-btn {
     margin-top: 30px;
     padding: 10px 20px;
@@ -115,11 +115,13 @@ function flipCard(card) {
 function checkMatch() {
   const [c1, c2] = flippedCards;
   if (c1.dataset.pair === c2.dataset.pair && c1 !== c2) {
+    // 맞춘 카드 초록색으로 유지
     c1.classList.add("matched");
     c2.classList.add("matched");
     c1.textContent = c1.dataset.text;
     c2.textContent = c2.dataset.text;
   } else {
+    // 틀린 카드만 다시 뒤집기
     c1.classList.remove("flipped");
     c2.classList.remove("flipped");
     c1.textContent = "?";
