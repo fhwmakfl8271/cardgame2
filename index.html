@@ -1,15 +1,122 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <title>단어 친구 찾기</title>
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8" />
+<title>단어 친구 찾기!</title>
+<style>
+  body { font-family: sans-serif; text-align: center; background: #f8f8ff; }
+  h1 { color: #4b0082; }
+  .container { display: flex; justify-content: center; margin-top: 20px; }
+  .column { margin: 0 40px; }
+  .item {
+    background: #fff;
+    border: 2px solid #ddd;
+    padding: 10px;
+    margin: 5px;
+    cursor: grab;
+    border-radius: 8px;
+  }
+  .dropzone {
+    background: #f0f0f0;
+    border: 2px dashed #aaa;
+    padding: 10px;
+    margin: 5px;
+    min-height: 40px;
+    border-radius: 8px;
+  }
+  #result { margin-top: 20px; font-weight: bold; }
+  button { margin-top: 20px; padding: 10px 20px; border-radius: 8px; border: none; background: #4b0082; color: #fff; cursor: pointer; }
+</style>
 </head>
 <body>
-  <h1>🧠 단어 친구 찾기</h1>
-  <p>러시아어 단어와 한글 뜻을 짝지어 보세요!</p>
-  <div id="game-board"></div>
-  <button id="restart-btn">다시하기</button>
-  <script src="script.js"></script>
+
+<h1>🧠 단어 친구 찾기! <br><small>Найди друга слов!</small></h1>
+<p>러시아어 단어와 뜻이 맞는 한글 단어를 연결해 보세요!<br>
+<small>Соедини русские слова с их правильным значением на корейском языке!</small></p>
+
+<div class="container">
+  <div class="column" id="russianWords"></div>
+  <div class="column" id="koreanWords"></div>
+</div>
+
+<div id="result"></div>
+<button onclick="initGame()">다시하기</button>
+
+<script>
+const allWords = [
+  {ru:'дом', ko:'집'}, {ru:'кошка', ko:'고양이'}, {ru:'собака', ko:'강아지'}, {ru:'мяч', ko:'공'}, 
+  {ru:'книга', ko:'책'}, {ru:'стол', ko:'책상'}, {ru:'стул', ko:'의자'}, {ru:'окно', ko:'창문'},
+  {ru:'дверь', ko:'문'}, {ru:'ручка', ko:'펜'}, {ru:'яблоко', ko:'사과'}, {ru:'банан', ko:'바나나'},
+  {ru:'молоко', ko:'우유'}, {ru:'вода', ko:'물'}, {ru:'школа', ko:'학교'}, {ru:'учитель', ko:'선생님'},
+  {ru:'друг', ko:'친구'}, {ru:'семья', ko:'가족'}, {ru:'мама', ko:'엄마'}, {ru:'папа', ko:'아빠'},
+  {ru:'солнце', ko:'태양'}, {ru:'луна', ko:'달'}, {ru:'звезда', ko:'별'}, {ru:'дерево', ko:'나무'},
+  {ru:'цветок', ko:'꽃'}, {ru:'трава', ko:'풀'}, {ru:'котёнок', ko:'아기고양이'}, {ru:'щенок', ko:'강아지(새끼)'},
+  {ru:'игра', ko:'게임'}, {ru:'песня', ko:'노래'}
+];
+
+let currentWords = [];
+
+function shuffle(array) {
+  return array.sort(() => Math.random() - 0.5);
+}
+
+function initGame() {
+  document.getElementById('result').textContent = '';
+
+  // 30개 중 랜덤으로 5개 선택
+  currentWords = shuffle([...allWords]).slice(0, 5);
+
+  const russianCol = document.getElementById('russianWords');
+  const koreanCol = document.getElementById('koreanWords');
+  russianCol.innerHTML = '';
+  koreanCol.innerHTML = '';
+
+  // 러시아어 단어
+  currentWords.forEach(word => {
+    const div = document.createElement('div');
+    div.textContent = word.ru;
+    div.className = 'item';
+    div.draggable = true;
+    div.dataset.word = word.ko;
+    div.addEventListener('dragstart', drag);
+    russianCol.appendChild(div);
+  });
+
+  // 한글 단어 (섞기)
+  shuffle([...currentWords]).forEach(word => {
+    const div = document.createElement('div');
+    div.className = 'dropzone';
+    div.dataset.correct = word.ko;
+    div.textContent = word.ko;
+    div.addEventListener('dragover', allowDrop);
+    div.addEventListener('drop', drop);
+    koreanCol.appendChild(div);
+  });
+}
+
+function drag(event) {
+  event.dataTransfer.setData('text', event.target.dataset.word);
+  event.dataTransfer.setData('text/id', event.target.textContent);
+}
+
+function allowDrop(event) {
+  event.preventDefault();
+}
+
+function drop(event) {
+  event.preventDefault();
+  const answer = event.dataTransfer.getData('text');
+  if (answer === event.target.dataset.correct) {
+    event.target.style.background = '#c0ffc0';
+    document.getElementById('result').textContent = '정답입니다! / Правильно!';
+  } else {
+    event.target.style.background = '#ffc0c0';
+    document.getElementById('result').textContent = '틀렸어요! / Неправильно!';
+  }
+}
+
+initGame();
+</script>
+
 </body>
 </html>
